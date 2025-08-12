@@ -1,0 +1,33 @@
+name: Environment Deployment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: staging
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment || 'staging' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to staging
+        if: ${{ github.event.inputs.environment == 'staging' || github.event.inputs.environment == '' }}
+        run: echo "Deploying to staging..."
+
+      - name: Deploy to production
+        if: ${{ github.event.inputs.environment == 'production' }}
+        run: echo "Deploying to production..."
