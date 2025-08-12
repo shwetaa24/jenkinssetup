@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
       - name: Build frontend
         working-directory: ./frontend
@@ -26,6 +29,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - run: chmod +x gradlew
+        working-directory: ./backend
 
       - name: Build backend
         working-directory: ./backend
@@ -53,5 +59,6 @@ jobs:
           name: backend-build
           path: ./backend-build
 
-      - name: Build Docker image
-        run: docker build -t my-app-image .
+      - name: Copy artifacts into build context
+        run: |
+          mkdir -p fronten
