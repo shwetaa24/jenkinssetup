@@ -1,0 +1,35 @@
+name: Matrix with Conditional Steps
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [16, 18]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Security scan (only on ubuntu-latest with Node.js 18)
+        if: matrix.os == 'ubuntu-latest' && matrix.node == 18
+        run: |
+          echo "Running extra security scan..."
+          npm audit
