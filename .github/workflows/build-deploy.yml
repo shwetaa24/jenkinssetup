@@ -29,8 +29,7 @@ jobs:
 
       - name: Build backend
         working-directory: ./backend
-        run: |
-          ./gradlew build
+        run: ./gradlew build
 
       - name: Upload backend artifact
         uses: actions/upload-artifact@v3
@@ -55,5 +54,4 @@ jobs:
           path: ./backend-build
 
       - name: Build Docker image
-        run: |
-          docker build -t my-app-image .
+        run: docker build -t my-app-image .
