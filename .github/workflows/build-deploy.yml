@@ -30,7 +30,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - run: chmod +x gradlew
+      - name: Make Gradle executable
+        run: chmod +x gradlew
         working-directory: ./backend
 
       - name: Build backend
@@ -61,4 +62,9 @@ jobs:
 
       - name: Copy artifacts into build context
         run: |
-          mkdir -p fronten
+          mkdir -p frontend backend
+          cp -r ./frontend-dist/* ./frontend/
+          cp -r ./backend-build/* ./backend/
+
+      - name: Build Docker image
+        run: docker build -t my-app-image .
