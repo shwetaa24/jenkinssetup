@@ -1,0 +1,19 @@
+name: Main Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  node16_with_lint:
+    uses: ./.github/workflows/test.yml
+    with:
+      node_version: '16'
+      run_lint: true
+
+  node18_without_lint:
+    uses: ./.github/workflows/test.yml
+    with:
+      node_version: '18'
+      run_lint: false
