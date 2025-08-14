@@ -1,0 +1,93 @@
+# This workflow has been refactored to run frontend and backend jobs in parallel,
+# with a final Docker build job that depends on their successful completion.
+
+name: Parallel Web App CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# The `jobs` section defines all the tasks for the workflow.
+jobs:
+  # The frontend job runs in parallel with the backend job.
+  frontend:
+    # We use a human-readable name for the job.
+    name: Frontend CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        # This action checks out the code from the repository.
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        # Sets up Node.js for the frontend part of the application.
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # You can specify any version you need
+
+      - name: Install Frontend Dependencies
+        # Navigates to the frontend directory and installs the dependencies.
+        run: |
+          cd frontend
+          npm install
+
+      - name: Run Frontend Tests
+        # Runs the frontend test suite.
+        run: |
+          cd frontend
+          npm test
+
+  # The backend job also runs in parallel with the frontend job.
+  backend:
+    name: Backend CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        # Sets up Python for the backend part of the application.
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' # Specify your Python version
+
+      - name: Install Backend Dependencies
+        # Navigates to the backend directory and installs Python dependencies.
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest # Assuming you use pytest
+
+      - name: Run Backend Tests
+        # Runs the backend test suite.
+        run: |
+          cd backend
+          pytest
+
+  # The docker_build job is a final, dependent job.
+  docker_build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    # The 'needs' keyword is crucial here. This job will ONLY start
+    # after both the 'frontend' and 'backend' jobs have successfully completed.
+    needs: [frontend, backend]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Docker Login
+        # This step logs into a Docker registry (e.g., Docker Hub).
+        # You would use secrets here for security.
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Build and Push Docker Image
+        # This step builds the Docker image and pushes it to the registry.
+        run: |
+          docker build -t your-username/your-app-name:latest .
+          docker push your-username/your-app-name:latest
