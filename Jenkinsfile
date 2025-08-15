@@ -1,15 +1,49 @@
+pipeline {
+    agent any
 
-stage('Build') {
-  parallel {
-    stage('Build Frontend') {
-      steps {
-        sh 'cd frontend && npm install && npm run build'
-      }
+    stages {
+        stage('Checkout') {
+            steps {
+                cleanWs()
+                git branch: 'main', url: 'https://github.com/shwetaa24/jenkinssetup.git'
+            }
+        }
+
+        stage('Build') {
+            parallel {
+                stage('Build Frontend') {
+                    steps {
+                        sh '''
+                            cd frontend
+                            npm install
+                            npm run build
+                        '''
+                    }
+                }
+                stage('Build Backend') {
+                    steps {
+                        sh '''
+                            cd backend
+                            chmod +x gradlew
+                            ./gradlew build
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+                // Example: sh 'mvn test'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying application...'
+                // Add deployment commands here
+            }
+        }
     }
-    stage('Build Backend') {
-      steps {
-        sh 'cd backend && ./gradlew build'
-      }
-    }
-  }
 }
