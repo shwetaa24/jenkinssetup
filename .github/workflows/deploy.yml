@@ -35,4 +35,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Deploy to Production
-        run: echo "🚀 Deploying to production..."
+        run: echo "🚀 Deploying to production..."
