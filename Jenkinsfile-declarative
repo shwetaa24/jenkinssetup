@@ -1,13 +1,11 @@
 pipeline {
     agent any
 
-    parameters {
-        booleanParam(name: 'SKIP_TEST', defaultValue: false, description: 'Skip the test stage')
-    }
-stage('Checkout') {
-    git branch: 'master', url: 'https://github.com/shwetaa24/jenkinssetup.git'
-}
-
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'master', url: 'https://github.com/shwetaa24/jenkinssetup.git'
+            }
         }
 
         stage('Install Dependencies') {
@@ -17,24 +15,8 @@ stage('Checkout') {
         }
 
         stage('Run Tests') {
-            when {
-                expression { return !params.SKIP_TEST }   // only run if SKIP_TEST = false
-            }
             steps {
                 sh 'npm test'
-            }
-        }
-
-        stage('Deploy') {
-            when {
-                allOf {
-                    branch 'master'          // only run if branch is master
-                    expression { currentBuild.currentResult == 'SUCCESS' }
-                }
-            }
-            steps {
-                echo "Deploying application..."
-                sh 'echo Deploying Node.js app to server...'
             }
         }
     }
