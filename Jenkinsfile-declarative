@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo '📥 Checking out code...'
+                git branch: 'main', url: 'https://github.com/shwetaa24/jenkinssetup.git'
+            }
+        }
+
+        stage('Check Node & NPM') {
+            steps {
+                echo '🔎 Checking Node.js and NPM versions...'
+                sh 'node -v'
+                sh 'npm -v'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                echo '📦 Installing dependencies...'
+                sh 'npm install'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                echo '🧪 Running tests...'
+                sh 'npm test'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Build success!'
+        }
+        failure {
+            echo '❌ Build failed!'
+        }
+    }
+}
