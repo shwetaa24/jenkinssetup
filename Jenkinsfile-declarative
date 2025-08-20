@@ -12,22 +12,22 @@ pipeline {
         stage('Check Node & NPM') {
             steps {
                 echo '🔎 Checking Node.js and NPM versions...'
-                bat 'node -v'
-                bat 'npm -v'
+                sh 'node -v'
+                sh 'npm -v'
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 echo '📦 Installing dependencies...'
-                bat 'npm install'
+                sh 'npm install'
             }
         }
 
         stage('Run Tests') {
             steps {
                 echo '🧪 Running tests...'
-                bat 'npm test'
+                sh 'npm test'
             }
         }
     }
@@ -41,5 +41,3 @@ pipeline {
         }
     }
 }
-
-
